@@ -71,7 +71,7 @@ app.layout = dbc.Container([
                     dbc.Input(id='tenure', type='number', value=1, min=0, className='mb-4'), # Ensure non-negative values
                     
                     html.Label("Total Charges", className='font-weight-bold'),
-                    dbc.Input(id='total_charges', type='number', value=0, className='mb-4'),
+                   .Input(id='total_charges', type='number', value=0, className='mb-4'),
                     
                     html.Label("Internet Service", className='font-weight-bold'),
                     dcc.Dropdown(
@@ -196,4 +196,5 @@ def display_model_performance(model_type, selected_columns):
     return html.P(f"{model_type} model not found for selected columns", className='lead text-danger')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 8050))
+    app.run(host='0.0.0.0', port=port, debug=True)
