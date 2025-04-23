@@ -71,7 +71,7 @@ app.layout = dbc.Container([
                     dbc.Input(id='tenure', type='number', value=1, min=0, className='mb-4'), # Ensure non-negative values
                     
                     html.Label("Total Charges", className='font-weight-bold'),
-                   .Input(id='total_charges', type='number', value=0, className='mb-4'),
+                    dbc.Input(id='total_charges', type='number', value=0, className='mb-4'),
                     
                     html.Label("Internet Service", className='font-weight-bold'),
                     dcc.Dropdown(
