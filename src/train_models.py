@@ -20,13 +20,13 @@ def ReadFile():
 
 def TrainModel(dataFrame, TrainOnColumns, typeOfModel):
 
-    categorical_columns = ['InternetService', 'Contract']
+    categorical_columns = ['InternetService', 'Contract', 'Churn']
 
     # Convert categorical columns to 'category' data type
     for col in categorical_columns:
         if col in dataFrame.columns:
             dataFrame[col] = dataFrame[col].astype('category')
-    dataFrame = dataFrame.fillna(0)
+    # dataFrame = dataFrame.fillna(0)
     yTrain = dataFrame['Churn']
     xTrain = dataFrame[TrainOnColumns]
 
@@ -67,7 +67,7 @@ def TrainModel(dataFrame, TrainOnColumns, typeOfModel):
             model.fit(xTrain, yTrain)
         case 'Neural Network':
             estimators = [('scaler', StandardScaler()), 
-                          ('clf', MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 3), random_state=1, max_iter=2000))]
+                          ('clf', MLPClassifier(solver='lbfgs', alpha=1e-6, hidden_layer_sizes=(5, 3), random_state=1, max_iter=2000))]
             pipe = Pipeline(steps=estimators)
             model = pipe.fit(xTrain, yTrain)
     return model
@@ -91,21 +91,20 @@ def convert_to_numerical(df):
         'No internet service': 2,
         'No phone service': 2
     }
-
     # Apply the mappings to the relevant columns
-    for column in ['gender', 'SeniorCitizen', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines', 'InternetService', 'OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 'TechSupport', 'StreamingTV', 'StreamingMovies', 'Contract', 'PaperlessBilling', 'PaymentMethod', 'Churn']:
+    for column in ['InternetService', 'Contract', 'Churn']:
         if column in df.columns:
             df[column] = df[column].map(mappings).fillna(df[column])
-    
     return df
 
 def generate_and_save_models():
     df = ReadFile()
     df = convert_to_numerical(df)
+    print(df.head())
     columns_to_combine = ['Contract', 'tenure', 'TotalCharges', 'InternetService', 'MonthlyCharges']
     
-    # models_to_train = ['XGBoost', 'Random Forest', 'Logistic Regression', 'Neural Network']
-    models_to_train = ['Random Forest']
+    models_to_train = ['XGBoost', 'Logistic Regression', 'Neural Network']
+    # models_to_train = ['Random Forest']
     artifacts_dir = 'artifacts'
     
     # Create the artifacts directory if it doesn't exist
