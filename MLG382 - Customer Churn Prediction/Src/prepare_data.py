@@ -8,7 +8,7 @@ def load_and_clean_data(filepath):
     # Load the raw dataset
     df = pd.read_csv(filepath)
 
-    # Strip spaces from column names (just in case)
+    # Strip spaces from column names
     df.columns = df.columns.str.strip()
 
     # Replace empty strings in 'TotalCharges' with NaN and drop them
@@ -33,6 +33,6 @@ def split_and_save_data(df, test_size=0.2, random_state=42):
     print(f"✅ Saved {len(test_df)} rows to data/test.csv")
 
 if __name__ == "__main__":
-    raw_path = "WA_Fn-UseC_-Telco-Customer-Churn.csv"  # Adjust path if needed
+    raw_path = "WA_Fn-UseC_-Telco-Customer-Churn.csv" 
     data = load_and_clean_data(raw_path)
     split_and_save_data(data)
