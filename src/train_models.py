@@ -1,5 +1,4 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -19,7 +18,7 @@ def ReadFile():
     df = pd.read_csv(file_path)
     return df
 
-def TrainModel(dataFrame, TrainOnColumns, typeOfModel, testSize=0.2):
+def TrainModel(dataFrame, TrainOnColumns, typeOfModel):
 
     categorical_columns = ['InternetService', 'Contract']
 
@@ -61,7 +60,7 @@ def TrainModel(dataFrame, TrainOnColumns, typeOfModel, testSize=0.2):
                 'min_samples_split': Integer(2, 10),
                 'min_samples_leaf': Integer(2, 10),
             }
-            model = BayesSearchCV(estimator=RFModel, search_spaces=searchSpace, n_iter=20, cv=3, random_state=1)
+            model = BayesSearchCV(estimator=RFModel, search_spaces=searchSpace, n_iter=20, cv=3, random_state=1, refit=True)
             model.fit(xTrain, yTrain)
         case 'Logistic Regression':
             model = LogisticRegression(max_iter=2000, class_weight='balanced')
@@ -105,8 +104,8 @@ def generate_and_save_models():
     df = convert_to_numerical(df)
     columns_to_combine = ['Contract', 'tenure', 'TotalCharges', 'InternetService', 'MonthlyCharges']
     
-    models_to_train = ['XGBoost', 'Random Forest', 'Logistic Regression', 'Neural Network']
-    # models_to_train = ['Random Forest']
+    # models_to_train = ['XGBoost', 'Random Forest', 'Logistic Regression', 'Neural Network']
+    models_to_train = ['Random Forest']
     artifacts_dir = 'artifacts'
     
     # Create the artifacts directory if it doesn't exist
@@ -117,11 +116,13 @@ def generate_and_save_models():
         for combination in itertools.combinations(columns_to_combine, r):
             for model_type in models_to_train:
                 filename = os.path.join(artifacts_dir, f"model_{model_type}_{'_'.join(combination)}.joblib")
-                if not os.path.exists(filename):
-                    model = TrainModel(df, list(combination), model_type)
-                    joblib.dump(model, filename)
-                else:
-                    print(f"Model {filename} already exists. Skipping...")
+                model = TrainModel(df, list(combination), model_type)
+                joblib.dump(model, filename)
+                # if not os.path.exists(filename):
+                #     model = TrainModel(df, list(combination), model_type)
+                #     joblib.dump(model, filename)
+                # else:
+                #     print(f"Model {filename} already exists. Skipping...")
 
 if __name__ == "__main__":
     generate_and_save_models()

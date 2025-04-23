@@ -6,7 +6,6 @@ import pandas as pd
 import joblib
 import os
 import plotly.figure_factory as ff
-from category_encoders import TargetEncoder
 
 # Define the model types and input columns
 model_types = ['Logistic Regression', 'Random Forest', 'XGBoost', 'Neural Network']
