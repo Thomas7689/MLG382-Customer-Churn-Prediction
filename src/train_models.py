@@ -55,7 +55,7 @@ def TrainModel(dataFrame, TrainOnColumns, typeOfModel, testSize=0.2):
             model = BayesSearchCV(pipe, searchSpace, cv=5, n_iter=20, scoring='roc_auc_ovr', random_state=1, refit=True)
             model.fit(xTrain, yTrain)
         case 'Random Forest':
-            RFModel = RandomForestClassifier(random_state=1, class_weight='balanced')
+            RFModel = RandomForestClassifier(random_state=1, class_weight='balanced_subsample')
             searchSpace = {
                 'max_depth': Integer(2, 6),
                 'ccp_alpha': Real(0.0, 10.0),
@@ -108,6 +108,7 @@ def generate_and_save_models():
     columns_to_combine = ['Contract', 'tenure', 'TotalCharges', 'InternetService', 'MonthlyCharges']
     
     models_to_train = ['XGBoost', 'Random Forest', 'Logistic Regression', 'Neural Network']
+    models_to_train = ['Random Forest']
     artifacts_dir = 'artifacts'
     
     # Create the artifacts directory if it doesn't exist
