@@ -55,13 +55,13 @@ def TrainModel(dataFrame, TrainOnColumns, typeOfModel):
         case 'Random Forest':
             RFModel = RandomForestClassifier(random_state=1, class_weight='balanced_subsample')
             searchSpace = {
-                'max_depth': Integer(2, 6),
-                'ccp_alpha': Real(0.0, 10.0),
+                'max_depth': Integer(2, 8),
+                'ccp_alpha': Real(0.0, 0.5),
                 'n_estimators': Integer(10, 1000),
                 'min_samples_split': Integer(2, 10),
-                'min_samples_leaf': Integer(2, 10),
+                'min_samples_leaf': Integer(1, 10),
             }
-            model = BayesSearchCV(estimator=RFModel, search_spaces=searchSpace, n_iter=50, cv=3, random_state=2, refit=True)
+            model = BayesSearchCV(estimator=RFModel, search_spaces=searchSpace, n_iter=20, cv=3, random_state=2, refit=True)
             model.fit(xTrain, yTrain)
 
         case 'Logistic Regression':

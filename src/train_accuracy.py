@@ -9,7 +9,7 @@ model_types = ['Logistic Regression', 'Random Forest', 'XGBoost', 'Neural Networ
 input_columns = ['Contract', 'tenure', 'TotalCharges', 'InternetService', 'MonthlyCharges']
 
 def ReadFile():
-    df = pd.read_csv('../data/test.csv')
+    df = pd.read_csv('data/test.csv')
     return df
 
 def convert_to_numerical(df):
