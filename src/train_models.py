@@ -108,14 +108,14 @@ def generate_and_save_models():
     columns_to_combine = ['Contract', 'tenure', 'TotalCharges', 'InternetService', 'MonthlyCharges']
     
     models_to_train = ['XGBoost', 'Random Forest', 'Logistic Regression', 'Neural Network']
-    models_to_train = ['Random Forest']
+    # models_to_train = ['Random Forest']
     artifacts_dir = 'artifacts'
     
     # Create the artifacts directory if it doesn't exist
     if not os.path.exists(artifacts_dir):
         os.makedirs(artifacts_dir)
     
-    for r in range(1, len(columns_to_combine) + 1):
+    for r in range(1, len(columns_to_combine) +1):
         for combination in itertools.combinations(columns_to_combine, r):
             for model_type in models_to_train:
                 filename = os.path.join(artifacts_dir, f"model_{model_type}_{'_'.join(combination)}.joblib")
