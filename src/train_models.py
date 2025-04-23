@@ -51,20 +51,23 @@ def TrainModel(dataFrame, TrainOnColumns, typeOfModel):
             }
             model = BayesSearchCV(pipe, searchSpace, cv=5, n_iter=20, scoring='roc_auc_ovr', random_state=1, refit=True)
             model.fit(xTrain, yTrain)
+
         case 'Random Forest':
             RFModel = RandomForestClassifier(random_state=1, class_weight='balanced_subsample')
             searchSpace = {
                 'max_depth': Integer(2, 6),
                 'ccp_alpha': Real(0.0, 10.0),
-                'n_estimators': Integer(10, 500),
+                'n_estimators': Integer(10, 1000),
                 'min_samples_split': Integer(2, 10),
                 'min_samples_leaf': Integer(2, 10),
             }
-            model = BayesSearchCV(estimator=RFModel, search_spaces=searchSpace, n_iter=20, cv=3, random_state=1, refit=True)
+            model = BayesSearchCV(estimator=RFModel, search_spaces=searchSpace, n_iter=50, cv=3, random_state=2, refit=True)
             model.fit(xTrain, yTrain)
+
         case 'Logistic Regression':
             model = LogisticRegression(max_iter=2000, class_weight='balanced')
             model.fit(xTrain, yTrain)
+
         case 'Neural Network':
             estimators = [('scaler', StandardScaler()), 
                           ('clf', MLPClassifier(solver='lbfgs', alpha=1e-6, hidden_layer_sizes=(5, 3), random_state=1, max_iter=2000))]
@@ -77,15 +80,9 @@ def convert_to_numerical(df):
     mappings = {
         'Yes': 1,
         'No': 0,
-        'Female': 0,
-        'Male': 1,
         'Month-to-month': 0,
         'One year': 1,
         'Two year': 2,
-        'Electronic check': 0,
-        'Mailed check': 1,
-        'Bank transfer (automatic)': 2,
-        'Credit card (automatic)': 3,
         'DSL': 0,
         'Fiber optic': 1,
         'No internet service': 2,
@@ -100,11 +97,10 @@ def convert_to_numerical(df):
 def generate_and_save_models():
     df = ReadFile()
     df = convert_to_numerical(df)
-    print(df.head())
     columns_to_combine = ['Contract', 'tenure', 'TotalCharges', 'InternetService', 'MonthlyCharges']
     
-    models_to_train = ['XGBoost', 'Logistic Regression', 'Neural Network']
-    # models_to_train = ['Random Forest']
+    # models_to_train = ['XGBoost', 'Logistic Regression', 'Neural Network']
+    models_to_train = ['Random Forest']
     artifacts_dir = 'artifacts'
     
     # Create the artifacts directory if it doesn't exist

@@ -9,7 +9,7 @@ model_types = ['Logistic Regression', 'Random Forest', 'XGBoost', 'Neural Networ
 input_columns = ['Contract', 'tenure', 'TotalCharges', 'InternetService', 'MonthlyCharges']
 
 def ReadFile():
-    df = pd.read_csv('data/test.csv')
+    df = pd.read_csv('../data/test.csv')
     return df
 
 def convert_to_numerical(df):
@@ -17,15 +17,9 @@ def convert_to_numerical(df):
     mappings = {
         'Yes': 1,
         'No': 0,
-        'Female': 0,
-        'Male': 1,
         'Month-to-month': 0,
         'One year': 1,
         'Two year': 2,
-        'Electronic check': 0,
-        'Mailed check': 1,
-        'Bank transfer (automatic)': 2,
-        'Credit card (automatic)': 3,
         'DSL': 0,
         'Fiber optic': 1,
         'No internet service': 2,
@@ -33,7 +27,7 @@ def convert_to_numerical(df):
     }
 
     # Apply the mappings to the relevant columns
-    for column in ['gender', 'SeniorCitizen', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines', 'InternetService', 'OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 'TechSupport', 'StreamingTV', 'StreamingMovies', 'Contract', 'PaperlessBilling', 'PaymentMethod', 'Churn']:
+    for column in ['InternetService', 'Contract', 'Churn']:
         if column in df.columns:
             df[column] = df[column].map(mappings).fillna(df[column])
     df = df.fillna(0)

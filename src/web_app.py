@@ -19,15 +19,9 @@ performance_data = joblib.load(os.path.join(artifacts_folder, 'model_performance
 mappings = {
     'Yes': 1,
     'No': 0,
-    'Female': 0,
-    'Male': 1,
     'Month-to-month': 0,
     'One year': 1,
     'Two year': 2,
-    'Electronic check': 0,
-    'Mailed check': 1,
-    'Bank transfer (automatic)': 2,
-    'Credit card (automatic)': 3,
     'DSL': 0,
     'Fiber optic': 1,
     'No internet service': 2,
@@ -159,7 +153,7 @@ def predict(n_clicks, selected_columns, contract, tenure, total_charges, interne
         'InternetService': [internet_service],
         'MonthlyCharges': [monthly_charges]
     })
-    # Apply the updated mappings to the input data
+    # Apply the mappings to the input data
     for col in ['Contract', 'InternetService']:
         input_data[col] = input_data[col].map(mappings)
     
