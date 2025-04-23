@@ -15,23 +15,21 @@ import joblib
 
 def ReadFile():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(BASE_DIR, '../data/WA_Fn-UseC_-Telco-Customer-Churn.csv')
+    file_path = os.path.join(BASE_DIR, '../data/train.csv')
     df = pd.read_csv(file_path)
-    df.drop(columns='customerID', inplace=True)
     return df
 
 def TrainModel(dataFrame, TrainOnColumns, typeOfModel, testSize=0.2):
 
-    categorical_columns = ['Gender', 'SeniorCitizen', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines', 'InternetService', 'OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 'TechSupport', 'StreamingTV', 'StreamingMovies', 'Contract', 'PaperlessBilling', 'PaymentMethod']
+    categorical_columns = ['InternetService', 'Contract']
 
     # Convert categorical columns to 'category' data type
     for col in categorical_columns:
         if col in dataFrame.columns:
             dataFrame[col] = dataFrame[col].astype('category')
     dataFrame = dataFrame.fillna(0)
-    targetColumn = dataFrame['Churn']
-    otherColumns = dataFrame[TrainOnColumns]
-    xTrain, xTest, yTrain, yTest = train_test_split(otherColumns, targetColumn, test_size=testSize, stratify=targetColumn, random_state=1)
+    yTrain = dataFrame['Churn']
+    xTrain = dataFrame[TrainOnColumns]
 
     # Filter categorical columns based on the selected combination
     selected_categorical_columns = [col for col in categorical_columns if col in TrainOnColumns]
