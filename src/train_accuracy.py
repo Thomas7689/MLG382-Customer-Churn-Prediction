@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 import itertools
 
 # Define the model types and input columns
-model_types = ['Logistic Regression', 'Random Forest', 'XGBoost', 'Neural Network']
+model_types = ['XGBoost', 'Random Forest', 'Logistic Regression', 'Neural Network']
 input_columns = ['Contract', 'tenure', 'TotalCharges', 'InternetService', 'MonthlyCharges']
 
 def ReadFile():
@@ -33,6 +33,7 @@ def convert_to_numerical(df):
     df = df.fillna(0)
     return df
 
+
 def generate_model_performance():
     df = convert_to_numerical(ReadFile())
     y = df['Churn']
@@ -46,19 +47,23 @@ def generate_model_performance():
             for model_type in model_types:
                 filename = os.path.join(artifacts_folder, f"model_{model_type}_{'_'.join(combination)}.joblib")
                 if os.path.exists(filename):
-                    model = joblib.load(filename)
-                    y_pred = model.predict(x)
-                    accuracy = accuracy_score(y, y_pred)
-                    cm = confusion_matrix(y, y_pred)
-                    performance_data.append({
-                        'model_type': model_type,
-                        'input_columns': combination,
-                        'accuracy': accuracy,
-                        'confusion_matrix': cm
-                    })
+                    try:
+                        model = joblib.load(filename)
+                        y_pred = model.predict(x)
+                        accuracy = accuracy_score(y, y_pred)
+                        cm = confusion_matrix(y, y_pred)
+                        performance_data.append({
+                            'model_type': model_type,
+                            'input_columns': combination,
+                            'accuracy': accuracy,
+                            'confusion_matrix': cm
+                        })
+                    except KeyError as e:
+                        print(f"KeyError: {e} in file {filename}")
     
     # Save the performance data to a file
     performance_data_file = os.path.join(artifacts_folder, 'model_performance_data.joblib')
     joblib.dump(performance_data, performance_data_file)
+
 
 generate_model_performance()

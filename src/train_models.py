@@ -8,6 +8,9 @@ from skopt import BayesSearchCV
 from skopt.space import Real, Integer
 from xgboost import XGBClassifier
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import StratifiedKFold
+from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import Pipeline
 import os
 import itertools
 import joblib
@@ -54,14 +57,15 @@ def TrainModel(dataFrame, TrainOnColumns, typeOfModel):
 
         case 'Random Forest':
             RFModel = RandomForestClassifier(random_state=1, class_weight='balanced_subsample')
+            pipeline = Pipeline([('smote', SMOTE(random_state=42)),('classifier', RFModel)])
             searchSpace = {
-                'max_depth': Integer(2, 8),
-                'ccp_alpha': Real(0.0, 0.5),
-                'n_estimators': Integer(10, 1000),
-                'min_samples_split': Integer(2, 10),
+                'max_depth': Integer(2, 20),
+                'ccp_alpha': Real(0.0, 1.0),
+                'n_estimators': Integer(50, 500),
+                'min_samples_split': Integer(2, 20),
                 'min_samples_leaf': Integer(1, 10),
             }
-            model = BayesSearchCV(estimator=RFModel, search_spaces=searchSpace, n_iter=20, cv=3, random_state=2, refit=True)
+            model = BayesSearchCV(estimator=pipeline, search_spaces={'classifier__' + k: v for k, v in searchSpace.items()}, n_iter=30, cv=StratifiedKFold(n_splits=3), random_state=2, refit=True)
             model.fit(xTrain, yTrain)
 
         case 'Logistic Regression':
@@ -99,7 +103,7 @@ def generate_and_save_models():
     df = convert_to_numerical(df)
     columns_to_combine = ['Contract', 'tenure', 'TotalCharges', 'InternetService', 'MonthlyCharges']
     
-    # models_to_train = ['XGBoost', 'Logistic Regression', 'Neural Network']
+    # models_to_train = ['XGBoost', 'Random Forest', 'Logistic Regression', 'Neural Network']
     models_to_train = ['Random Forest']
     artifacts_dir = 'artifacts'
     
@@ -111,13 +115,13 @@ def generate_and_save_models():
         for combination in itertools.combinations(columns_to_combine, r):
             for model_type in models_to_train:
                 filename = os.path.join(artifacts_dir, f"model_{model_type}_{'_'.join(combination)}.joblib")
-                model = TrainModel(df, list(combination), model_type)
-                joblib.dump(model, filename)
-                # if not os.path.exists(filename):
-                #     model = TrainModel(df, list(combination), model_type)
-                #     joblib.dump(model, filename)
-                # else:
-                #     print(f"Model {filename} already exists. Skipping...")
+                # model = TrainModel(df, list(combination), model_type)
+                # joblib.dump(model, filename)
+                if not os.path.exists(filename):
+                    model = TrainModel(df, list(combination), model_type)
+                    joblib.dump(model, filename)
+                else:
+                    print(f"Model {filename} already exists. Skipping...")
 
 if __name__ == "__main__":
     generate_and_save_models()
